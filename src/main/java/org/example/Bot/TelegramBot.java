@@ -16,12 +16,12 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
-        return "ReverseEsreveR_bot";
+        return "EbaTaroBot";
     }
 
     @Override
     public String getBotToken() {
-        return "7529659379:AAHmTD0Du91cIPRQOcQuTjCZdM2PR6uv2MA";
+        return "7544485925:AAE9oaTXVlshTsOOrBIp13RCh7wYLeJimF0";
     }
     private void sendMenu(long chatId) {
         SendMessage message = new SendMessage();
