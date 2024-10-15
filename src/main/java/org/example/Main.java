@@ -7,9 +7,17 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.FileNotFoundException;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws TelegramApiException {
+        var cardsMap = new HashMap<String,String>();
+        var cards = new ArrayList<>(cardsMap.keySet());
+        //var cards = new ArrayList<>(List.of("Sun", "Fool", "Death", "Lovers", "Hanget"));
+        Collections.shuffle(cards);
+        var take3 = cards.stream().limit(3).toList();
+        System.out.println(take3);
+
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         telegramBotsApi.registerBot(new TelegramBot());
         try {
