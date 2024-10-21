@@ -79,6 +79,15 @@ public class TelegramBot extends TelegramLongPollingBot {
                     e.printStackTrace(); // Обрабатываем возможные исключения
                 }
             }
+            else if (messageText.equals("Ежедневное предсказание")) {
+                message.setChatId(String.valueOf(chatId));
+                message.setText(Cards.Take3());
+                try {
+                    execute(message); // Отправляем сообщение
+                } catch (Exception e) {
+                    e.printStackTrace(); // Обрабатываем возможные исключения
+                }
+            }
             else if (messageText.equals("Мечи")) {
                 message.setChatId(String.valueOf(chatId));
                 message.setText("Туз мечей \n"+
