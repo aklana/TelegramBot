@@ -1,13 +1,10 @@
-package org.example.Bot;
+package TaroEncyclopedia.Bot;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -16,12 +13,12 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
-        return "EbaTaroBot";
+        return "TarotsSecretsBot";
     }
 
     @Override
     public String getBotToken() {
-        return "7544485925:AAE9oaTXVlshTsOOrBIp13RCh7wYLeJimF0";
+        return "8171701068:AAFJYsRWyScn7R2MNgRNJgBd8hmI_Ieos2k";
     }
     private void sendMenu(long chatId) {
         SendMessage message = new SendMessage();

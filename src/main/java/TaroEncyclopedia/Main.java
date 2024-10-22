@@ -1,7 +1,7 @@
-package org.example;
+package TaroEncyclopedia;
 
-import org.example.Bot.TarotCards;
-import org.example.Bot.TelegramBot;
+import TaroEncyclopedia.Bot.TarotCards;
+import TaroEncyclopedia.Bot.TelegramBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -28,9 +28,3 @@ public class Main {
         }
     }
 }
-//public class Main{
-   // public static void main(String[] args) throws FileNotFoundException {
-      //  TarotCards name=new TarotCards("text.txt");
-
-   // }
-//}
