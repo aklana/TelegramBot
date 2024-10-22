@@ -45,7 +45,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
-
+    private void TryCatchMessage(SendMessage message){
+        try {
+            execute(message); // Отправляем сообщение
+        } catch (Exception e) {
+            e.printStackTrace(); // Обрабатываем возможные исключения
+        }
+    }
     @Override
     public void onUpdateReceived(Update update) {
             TarotCards Cards;
@@ -70,20 +76,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                         "Жезлы \n" +
                         "Пентакли \n"+
                         "Старшие арканы");
-                try {
-                    execute(message); // Отправляем сообщение
-                } catch (Exception e) {
-                    e.printStackTrace(); // Обрабатываем возможные исключения
-                }
+                TryCatchMessage(message);
             }
             else if (messageText.equals("Ежедневное предсказание")) {
                 message.setChatId(String.valueOf(chatId));
                 message.setText(Cards.Take3());
-                try {
-                    execute(message); // Отправляем сообщение
-                } catch (Exception e) {
-                    e.printStackTrace(); // Обрабатываем возможные исключения
-                }
+                TryCatchMessage(message);
             }
             else if (messageText.equals("Мечи")) {
                 message.setChatId(String.valueOf(chatId));
@@ -94,20 +92,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                         "5 мечей \n" +
                         "6 мечей \n" +
                         "7 мечей \n");
-                try {
-                    execute(message); // Отправляем сообщение
-                } catch (Exception e) {
-                    e.printStackTrace(); // Обрабатываем возможные исключения
-                }
+                TryCatchMessage(message);
             }//либо хэш мэп, либо подгрузка из ткст файла. грай кэтч своя функция
             else if (messageText.equals("Туз мечей")) {
                 message.setChatId(String.valueOf(chatId));
                 message.setText(Cards.get("Туз мечей"));
-                try {
-                    execute(message); // Отправляем сообщение
-                } catch (Exception e) {
-                    e.printStackTrace(); // Обрабатываем возможные исключения
-                }
+                TryCatchMessage(message);
             }
         }
     }
