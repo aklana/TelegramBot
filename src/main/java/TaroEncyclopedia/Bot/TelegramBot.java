@@ -5,12 +5,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TelegramBot extends TelegramLongPollingBot {
+
+    private void TryCatchMessage(SendMessage message){
+    try {
+        execute(message); // Отправляем сообщение
+    } catch (Exception e) {
+        e.printStackTrace(); // Обрабатываем возможные исключения
+    }
+}
     @Override
     public String getBotUsername() {
         return "TarotsSecretsBot";
@@ -38,30 +44,20 @@ public class TelegramBot extends TelegramLongPollingBot {
         keyboardMarkup.setKeyboard(keyboard);
 
         message.setReplyMarkup(keyboardMarkup);
+        TryCatchMessage(message);
+    }
 
-        try {
-            execute(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    private void TryCatchMessage(SendMessage message){
-        try {
-            execute(message); // Отправляем сообщение
-        } catch (Exception e) {
-            e.printStackTrace(); // Обрабатываем возможные исключения
-        }
-    }
     @Override
     public void onUpdateReceived(Update update) {
-            TarotCards Cards;
+        TarotCards Cards;
         try {
-            Cards = new TarotCards("text.txt");
+            Cards = new TarotCards("data.txt");
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        SendMessage message = new SendMessage();
 
+        SendMessage message = new SendMessage();
+        message.enableHtml(true);
         if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
@@ -71,6 +67,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
             else if (messageText.equals("Изучение карт")) {
                 message.setChatId(String.valueOf(chatId));
+
                 message.setText("Кубки \n"+
                         "Мечи \n" +
                         "Жезлы \n" +
@@ -78,25 +75,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                         "Старшие арканы");
                 TryCatchMessage(message);
             }
+
             else if (messageText.equals("Ежедневное предсказание")) {
                 message.setChatId(String.valueOf(chatId));
                 message.setText(Cards.Take3());
-                TryCatchMessage(message);
-            }
-            else if (messageText.equals("Мечи")) {
-                message.setChatId(String.valueOf(chatId));
-                message.setText("Туз мечей \n"+
-                        "2 мечей \n" +
-                        "3 мечей \n" +
-                        "4 мечей \n"+
-                        "5 мечей \n" +
-                        "6 мечей \n" +
-                        "7 мечей \n");
-                TryCatchMessage(message);
-            }//либо хэш мэп, либо подгрузка из ткст файла. грай кэтч своя функция
-            else if (messageText.equals("Туз мечей")) {
-                message.setChatId(String.valueOf(chatId));
-                message.setText(Cards.get("Туз мечей"));
                 TryCatchMessage(message);
             }
         }
