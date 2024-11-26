@@ -8,14 +8,24 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.io.FileNotFoundException;
 import java.util.*;
 
+
 public class TelegramBot extends TelegramLongPollingBot {
 
+
+    private final TarotCards cards;
+    private final TaroHashMap answers;
+    public TelegramBot() throws FileNotFoundException {
+        super();
+        cards = new TarotCards("data.txt");
+        answers = new TaroHashMap("data2.txt");
+    }
     private void TryCatchMessage(SendMessage message){
     try {
         execute(message); // Отправляем сообщение
     } catch (Exception e) {
         e.printStackTrace(); // Обрабатываем возможные исключения
     }
+
 }
     @Override
     public String getBotUsername() {
@@ -26,6 +36,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return "8171701068:AAFJYsRWyScn7R2MNgRNJgBd8hmI_Ieos2k";
     }
+
     private void sendMenu(long chatId) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -49,13 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        TarotCards Cards;
-        try {
-            Cards = new TarotCards("data.txt");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
         SendMessage message = new SendMessage();
         message.enableHtml(true);
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -65,20 +69,16 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (messageText.equals("/start")) {
                 sendMenu(chatId);
             }
-            else if (messageText.equals("Изучение карт")) {
-                message.setChatId(String.valueOf(chatId));
+            else if (answers.containsKey(messageText)) {
+                    message.setChatId(String.valueOf(chatId));
+                    message.setText(answers.get(messageText).replace("#","\n"));
+                    TryCatchMessage(message);
 
-                message.setText("Кубки \n"+
-                        "Мечи \n" +
-                        "Жезлы \n" +
-                        "Пентакли \n"+
-                        "Старшие арканы");
-                TryCatchMessage(message);
             }
 
             else if (messageText.equals("Ежедневное предсказание")) {
                 message.setChatId(String.valueOf(chatId));
-                message.setText(Cards.Take3());
+                message.setText(cards.Take3());
                 TryCatchMessage(message);
             }
         }

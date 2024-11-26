@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class TarotCards {
-    private Map<String, TarotCard> dictionary;
+    private final Map<String, TarotCard> dictionary;
     public TarotCards(String filePath) throws FileNotFoundException {
         String name,meaning,inverted_meaning,picture,inverted_picture;
         File file = new File(filePath);

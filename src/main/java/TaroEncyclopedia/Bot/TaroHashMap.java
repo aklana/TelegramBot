@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 
 public class TaroHashMap {
-    private Map<String, String> answers;
+    private final Map<String, String> answers;
     public TaroHashMap(String filePath) throws FileNotFoundException {
         File file = new File(filePath);
         Scanner scanner = new Scanner(file);
@@ -20,4 +20,5 @@ public class TaroHashMap {
     public String get(String key) {
         return answers.get(key);
     }
+    public boolean containsKey(String key){return answers.containsKey(key);}
 }

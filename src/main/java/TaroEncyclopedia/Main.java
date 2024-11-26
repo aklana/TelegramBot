@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws TelegramApiException {
+    public static void main(String[] args) throws TelegramApiException, FileNotFoundException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         telegramBotsApi.registerBot(new TelegramBot());
     }
