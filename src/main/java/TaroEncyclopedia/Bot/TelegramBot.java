@@ -17,8 +17,15 @@ import java.util.List;
 
 
 public class TelegramBot extends TelegramLongPollingBot {
-    private List<String> feedbackList = new ArrayList<>();
+    private final List<String> feedbackList = new ArrayList<>();
     private boolean isFeedbackMode = false;
+    private final TarotCards cards;
+    private final TaroHashMap answers;
+    public TelegramBot() throws FileNotFoundException {
+        super();
+        cards = new TarotCards("data.txt");
+        answers = new TaroHashMap("data2.txt");
+    }
 
     private void TryCatchMessage(SendMessage message) {
         try {
@@ -72,12 +79,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        TarotCards Cards;
-        try {
-            Cards = new TarotCards("data.txt");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
 
         SendMessage message = new SendMessage();
         message.enableHtml(true);
@@ -88,33 +89,28 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             if (messageText.equals("/start")) {
                 sendMenu(chatId); // Отправляем основное меню
-            } else if (messageText.equals("Изучение карт")) {
+
+            }
+            else if (answers.containsKey(messageText)) {
                 message.setChatId(String.valueOf(chatId));
-                message.setText("Кубки \n" +
-                        "Мечи \n" +
-                        "Жезлы \n" +
-                        "Пентакли \n" +
-                        "Старшие арканы");
+                message.setText(answers.get(messageText).replace("#", "\n"));
+                TryCatchMessage(message);
+            }
+            else if (cards.containsKey(messageText)) {
+                message.setChatId(String.valueOf(chatId));
+                String information=cards.get(messageText).info();
+                message.setText(information);
+                TryCatchMessage(message);
+            }
+
+            else if (messageText.equals("Ежедневное предсказание")) {
+                message.setChatId(String.valueOf(chatId));
+                message.setText(cards.Take3());
                 TryCatchMessage(message);
                 sendMenu(chatId);
-            } else if (messageText.equals("Ежедневное предсказание")) {
-                message.setChatId(String.valueOf(chatId));
-                message.setText(Cards.Take3());
-                TryCatchMessage(message);
-                sendMenu(chatId);
 
-            } else if (messageText.equals("Обратная связь")) {
-                message.setChatId(String.valueOf(chatId));
-                message.setText("Выберите действие:\nОставить отзыв\nЧитать отзывы");
-                TryCatchMessage(message);
-
-            } else if (messageText.equals("Оставить отзыв")) {
-                isFeedbackMode = true;
-                message.setChatId(String.valueOf(chatId));
-                message.setText("Пожалуйста, напишите ваш отзыв:");
-                TryCatchMessage(message);
-
-            } else if (isFeedbackMode) {
+            }
+            else if (isFeedbackMode) {
                 feedbackList.add(messageText);
                 saveFeedback(messageText);
                 isFeedbackMode = false;
@@ -140,15 +136,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     feedbacks.append("Ошибка при чтении отзывов.");
                 }
 
-                SendMessage sendMessage = new SendMessage();
-                sendMessage.setChatId(String.valueOf(chatId));
-                sendMessage.setText(feedbacks.toString());
-
-                try {
-                    execute(sendMessage);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                message.setText(feedbacks.toString());
+                TryCatchMessage(message);
             }
 
         }

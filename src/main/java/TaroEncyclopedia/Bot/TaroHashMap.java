@@ -20,5 +20,6 @@ public class TaroHashMap {
     public String get(String key) {
         return answers.get(key);
     }
+
     public boolean containsKey(String key){return answers.containsKey(key);}
 }

@@ -16,7 +16,7 @@ public class TarotCards {
             inverted_meaning=scanner.nextLine();
             picture=scanner.nextLine();
             inverted_picture=scanner.nextLine();
-            dictionary.put(name, new TarotCard(name,meaning,inverted_meaning,picture,inverted_picture));
+            dictionary.put(name.replace("<b>", "").replace("</b>", ""), new TarotCard(name,meaning,inverted_meaning,picture,inverted_picture));
         }
         scanner.close();
     }
@@ -24,6 +24,8 @@ public class TarotCards {
     public TarotCard get(String key) {
         return dictionary.get(key);
     }
+
+    public boolean containsKey(String key){return dictionary.containsKey(key);}
 
     public String Take3() {
         Map<String,String> first_card,second_card,third_card;

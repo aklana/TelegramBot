@@ -32,4 +32,9 @@ public class TarotCard {
         }
         return card_details;
     }
+    public String info(){
+        String info;
+        info=name+"\n"+meaning+"\n"+invertedMeaning+"\n"+picture;
+        return info.replace("<b>", "").replace("</b>", "");
+    }
 }

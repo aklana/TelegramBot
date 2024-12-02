@@ -1,5 +1,7 @@
 package TaroEncyclopedia;
 
+import TaroEncyclopedia.Bot.TarotCard;
+import TaroEncyclopedia.Bot.TarotCards;
 import TaroEncyclopedia.Bot.TelegramBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
