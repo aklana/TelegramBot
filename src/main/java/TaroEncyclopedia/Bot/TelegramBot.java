@@ -2,10 +2,16 @@ package TaroEncyclopedia.Bot;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import javax.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -53,6 +59,25 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public String getBotToken() {
         return System.getenv("token");
+    }
+
+    private @Nullable String sendPhoto(long chatId, String filePath) {
+        SendPhoto photo = new SendPhoto();
+        photo.setChatId(String.valueOf(chatId));
+        photo.setPhoto(new InputFile(new java.io.File(filePath)));
+
+        try {
+            Message message = this.execute(photo);
+            // Получаем список фотографий из сообщения
+            List<PhotoSize> photos = message.getPhoto();
+            if (photos != null && !photos.isEmpty()) {
+                // Возвращаем file_id самой большой фотографии
+                return photos.get(photos.size() - 1).getFileId();
+            }
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+        return null; // Возвращаем null, если не удалось получить ID
     }
 
     private void sendMenu(long chatId) {
@@ -108,6 +133,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 message.setText(cards.Take3());
                 TryCatchMessage(message);
                 sendMenu(chatId);
+                sendPhoto(chatId, "C://Users//user//Downloads//e775e9ffc37f9bc9826e580f61811a5a.jpg");
 
             }
             else if (isFeedbackMode) {
