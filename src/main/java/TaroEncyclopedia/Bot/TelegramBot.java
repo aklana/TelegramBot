@@ -20,6 +20,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -33,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         answers = new TaroHashMap("data2.txt");
     }
 
-    private void TryCatchMessage(SendMessage message) {
+    private void silentSendMessage(SendMessage message) {
         try {
             execute(message); // Отправляем сообщение
         } catch (Exception e) {
@@ -41,13 +43,43 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    private void saveFeedback(String feedback) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("feedbacks.txt", true))) {
-            writer.write(feedback);
-            writer.newLine();
-        } catch (IOException e) {
-            System.out.println("Ошибка при сохранении отзыва: " + e.getMessage());
+    public static class Feedback {
+        private final String text;
+        private final int rating;
+
+        public Feedback(String text, int rating) {
+            this.text = text;
+            this.rating = rating;
         }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getRating() {
+            return rating;
+        }
+    }
+
+
+
+    //Классы и методы для обратной связи и рейтинга
+    public void saveFeedback(Feedback feedback) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("feedbacks.txt", true))) {
+            bw.write(feedback.getText() + " | Оценка: " + feedback.getRating());
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void scheduleTask(Runnable task, int delayInSeconds) {
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                task.run();
+            }
+        }, delayInSeconds * 1000L);
     }
 
 
@@ -58,7 +90,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return System.getenv("token");
+        return "8171701068:AAFJYsRWyScn7R2MNgRNJgBd8hmI_Ieos2k";//System.getenv("token");
     }
 
     private @Nullable String sendPhoto(long chatId, String filePath) {
@@ -99,7 +131,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         keyboardMarkup.setKeyboard(keyboard);
         message.setReplyMarkup(keyboardMarkup);
-        TryCatchMessage(message);
+        silentSendMessage(message);
     }
 
     @Override
@@ -119,51 +151,73 @@ public class TelegramBot extends TelegramLongPollingBot {
             else if (answers.containsKey(messageText)) {
                 message.setChatId(String.valueOf(chatId));
                 message.setText(answers.get(messageText).replace("#", "\n"));
-                TryCatchMessage(message);
+                silentSendMessage(message);
             }
             else if (cards.containsKey(messageText)) {
                 message.setChatId(String.valueOf(chatId));
                 String information=cards.get(messageText).info();
                 message.setText(information);
-                TryCatchMessage(message);
+                silentSendMessage(message);
+                sendPhoto(chatId, cards.get(messageText).getPicture());
+                sendMenu(chatId);
             }
 
             else if (messageText.equals("Ежедневное предсказание")) {
                 message.setChatId(String.valueOf(chatId));
-                message.setText(cards.Take3());
-                TryCatchMessage(message);
+                String[] result=cards.Take3();
+                message.setText(result[0]);
+                silentSendMessage(message);
+                //scheduleTask(() -> silentSendMessage(message), 5); //Выводим ежедневное предсказание на 5 сек позже
+                for (int i=1;i<4;i++)
+                    sendPhoto(chatId, result[i]);
                 sendMenu(chatId);
-                sendPhoto(chatId, "C://Users//user//Downloads//e775e9ffc37f9bc9826e580f61811a5a.jpg");
-
             }
             else if (isFeedbackMode) {
-                feedbackList.add(messageText);
-                saveFeedback(messageText);
-                isFeedbackMode = false;
-                message.setChatId(String.valueOf(chatId));
-                message.setText("Спасибо за ваш отзыв!");
-                TryCatchMessage(message);
-                sendMenu(chatId);
+                if (feedbackList.isEmpty()) {
+                    feedbackList.add(messageText);
+                    message.setChatId(String.valueOf(chatId));
+                    message.setText("Спасибо! Теперь, пожалуйста, оцените работу бота от 1 до 5:");
+                    silentSendMessage(message);
+                } else {
+                    try {
+                        int rating = Integer.parseInt(messageText);
+                        if (rating < 1 || rating > 5) {
+                            throw new NumberFormatException();
+                        }
+                        Feedback feedback = new Feedback(feedbackList.getFirst(), rating); // Создаем объект отзыва
+                        saveFeedback(feedback);
+                        feedbackList.clear();
+                        isFeedbackMode = false;
+                        message.setChatId(String.valueOf(chatId));
+                        message.setText("Спасибо за ваш отзыв и оценку!");
+                        silentSendMessage(message);
+                        sendMenu(chatId);
+                    } catch (NumberFormatException e) {
+                        message.setChatId(String.valueOf(chatId));
+                        message.setText("Пожалуйста, введите корректный рейтинг от 1 до 5.");
+                        silentSendMessage(message);
+                    }
+                }
 
             } else if (messageText.equals("Читать отзывы")) {
                 message.setChatId(String.valueOf(chatId));
-
                 StringBuilder feedbacks = new StringBuilder();
                 try (BufferedReader br = new BufferedReader(new FileReader("feedbacks.txt"))) {
                     String line;
                     while ((line = br.readLine()) != null) {
                         feedbacks.append(line).append("\n");
                     }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    feedbacks.append("Файл с отзывами не найден.");
+                    if (feedbacks.isEmpty()) {
+                        message.setText("Отзывов пока нет.");
+                    } else {
+                        message.setText(feedbacks.toString());
+                    }
                 } catch (IOException e) {
+                    message.setText("Ошибка при чтении отзывов.");
                     e.printStackTrace();
-                    feedbacks.append("Ошибка при чтении отзывов.");
                 }
-
-                message.setText(feedbacks.toString());
-                TryCatchMessage(message);
+                silentSendMessage(message);
+                sendMenu(chatId);
             }
 
         }

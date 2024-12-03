@@ -24,7 +24,6 @@ public class TarotCard {
         if (random.nextBoolean()) {
             card_details.put("meaning", this.meaning);
             card_details.put("picture", this.picture);
-
         }
         else{
             card_details.put("meaning", this.invertedMeaning);
@@ -34,7 +33,10 @@ public class TarotCard {
     }
     public String info(){
         String info;
-        info=name+"\n"+meaning+"\n"+invertedMeaning+"\n"+picture;
+        info=name+"\n"+meaning+"\n"+invertedMeaning;
         return info.replace("<b>", "").replace("</b>", "");
+    }
+    public String getPicture(){
+        return picture;
     }
 }
