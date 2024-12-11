@@ -9,31 +9,30 @@ public class TarotCard {
     private final String invertedPicture;
     private final Random random=new Random();
 
-    public TarotCard(String _name, String _meaning,String _inv_meaning, String _pic,String _inv_pic)
+    public TarotCard(String _name, String _meaning,String _invMeaning, String _pic,String _invPic)
     {
         this.name=_name;
         this.meaning=_meaning;
-        this.invertedMeaning=_inv_meaning;
+        this.invertedMeaning=_invMeaning;
         this.picture=_pic;
-        this.invertedPicture=_inv_pic;
+        this.invertedPicture=_invPic;
     }
-    public Map<String, String> card_position()
+    public Map<String, String> cardPosition()
     {
-        Map<String, String> card_details = new HashMap<>();
-        card_details.put("name", this.name);
+        Map<String, String> cardDetails = new HashMap<>();
+        cardDetails.put("name", this.name);
         if (random.nextBoolean()) {
-            card_details.put("meaning", this.meaning);
-            card_details.put("picture", this.picture);
+            cardDetails.put("meaning", this.meaning);
+            cardDetails.put("picture", this.picture);
         }
         else{
-            card_details.put("meaning", this.invertedMeaning);
-            card_details.put("picture", this.invertedPicture);
+            cardDetails.put("meaning", this.invertedMeaning);
+            cardDetails.put("picture", this.invertedPicture);
         }
-        return card_details;
+        return cardDetails;
     }
     public String info(){
-        String info;
-        info=name+"\n"+meaning+"\n"+invertedMeaning;
+        String info=name+"\n"+meaning+"\n"+invertedMeaning;
         return info.replace("<b>", "").replace("</b>", "");
     }
     public String getPicture(){

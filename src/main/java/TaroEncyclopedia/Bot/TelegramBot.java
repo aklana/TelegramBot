@@ -90,10 +90,10 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return "8171701068:AAFJYsRWyScn7R2MNgRNJgBd8hmI_Ieos2k";//System.getenv("token");
+        return System.getenv("token");
     }
 
-    private @Nullable String sendPhoto(long chatId, String filePath) {
+    private @Nullable void sendPhoto(long chatId, String filePath) {
         SendPhoto photo = new SendPhoto();
         photo.setChatId(String.valueOf(chatId));
         photo.setPhoto(new InputFile(new java.io.File(filePath)));
@@ -104,12 +104,11 @@ public class TelegramBot extends TelegramLongPollingBot {
             List<PhotoSize> photos = message.getPhoto();
             if (photos != null && !photos.isEmpty()) {
                 // Возвращаем file_id самой большой фотографии
-                return photos.get(photos.size() - 1).getFileId();
+                photos.getLast().getFileId();
             }
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        return null; // Возвращаем null, если не удалось получить ID
     }
 
     private void sendMenu(long chatId) {
@@ -162,9 +161,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                 sendMenu(chatId);
             }
 
-            else if (messageText.equals("Ежедневное предсказание")) {
+            else if (messageText.equalsIgnoreCase("Ежедневное предсказание")) {
                 message.setChatId(String.valueOf(chatId));
-                String[] result=cards.Take3();
+                String[] result=cards.take3();
                 message.setText(result[0]);
                 silentSendMessage(message);
                 //scheduleTask(() -> silentSendMessage(message), 5); //Выводим ежедневное предсказание на 5 сек позже
@@ -199,7 +198,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     }
                 }
 
-            } else if (messageText.equals("Читать отзывы")) {
+            } else if (messageText.equalsIgnoreCase("Читать отзывы")) {
                 message.setChatId(String.valueOf(chatId));
                 StringBuilder feedbacks = new StringBuilder();
                 try (BufferedReader br = new BufferedReader(new FileReader("feedbacks.txt"))) {
